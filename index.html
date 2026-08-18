@@ -3,22 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fullscreen Coupon Popup — The Loaded Tea Shop</title>
-
-<!-- ============================================================
-  HOW TO USE THIS ON YOUR LANDER
-  1. This file is fully self-contained (CSS + HTML + JS in one place).
-  2. Copy everything inside <body>...</body> and paste it right after
-     your <body> tag opens on your landing page.
-  3. Copy everything inside <style>...</style> into your page's <head>.
-  4. Copy the <script>...</script> block right before </body>.
-  5. Edit the CONFIG section at the top of the <script> to set your
-     own coupon code, brand, discount text and — most importantly —
-     your TRACKING / REDIRECT LINK.
-
-  This is a FULL-SCREEN version: it opens as a full-viewport overlay
-  a moment after the page loads, instead of sitting as a top bar.
-============================================================= -->
+<title>The Loaded Tea Shop — Extra 10% OFF</title>
 
 <style>
   :root{
@@ -31,6 +16,17 @@
   }
 
   * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-image: url('/teashop.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
 
   #ltsOverlay{
     position: fixed;
@@ -46,7 +42,6 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
   #ltsOverlay.lts-show{
@@ -58,8 +53,10 @@
     position: relative;
     width: 100%;
     max-width: 460px;
-    background: linear-gradient(160deg, var(--brand-dark) 0%, var(--brand-mid) 55%, var(--brand-light) 130%);
-    background-size: 200% 200%;
+    background-image: url('/teashop.png'), linear-gradient(160deg, var(--brand-dark) 0%, var(--brand-mid) 55%, var(--brand-light) 130%);
+    background-size: cover, 200% 200%;
+    background-position: center, 0% 50%;
+    background-blend-mode: overlay;
     animation: ltsGradientShift 7s ease infinite;
     border-radius: 22px;
     padding: 34px 26px 28px;
@@ -77,9 +74,9 @@
   }
 
   @keyframes ltsGradientShift{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
+    0%{background-position: center, 0% 50%;}
+    50%{background-position: center, 100% 50%;}
+    100%{background-position: center, 0% 50%;}
   }
 
   .lts-close{
@@ -335,13 +332,12 @@
 (function () {
   "use strict";
 
-  /* ================= CONFIG — EDIT THESE ================= */
+  /* ================= CONFIG ================= */
   var CONFIG = {
     couponCode: "RAYNA90612",
     brandName: "The Loaded Tea Shop",
     discountText: "Extra 10% OFF",
 
-    // ⬇⬇⬇ PASTE YOUR TRACKING / AFFILIATE LINK HERE ⬇⬇⬇
     redirectUrl: "https://www.theloadedteashop.com/RAYNA90612",
 
     // How long (ms) to show "Copied!" before redirecting
@@ -360,7 +356,7 @@
     // during the same browser tab session (uses sessionStorage).
     dontShowAgainThisSession: true
   };
-  /* ========================================================= */
+  /* ============================================ */
 
   var overlay   = document.getElementById("ltsOverlay");
   var ctaBtn    = document.getElementById("ltsCtaBtn");
@@ -421,10 +417,7 @@
   }
 
   function goToClientPage() {
-    if (!CONFIG.redirectUrl || CONFIG.redirectUrl.indexOf("PASTE_YOUR") === 0) {
-      console.warn("Set CONFIG.redirectUrl to your tracking link before going live.");
-      return;
-    }
+    if (!CONFIG.redirectUrl) return;
     if (CONFIG.openInNewTab) {
       window.open(CONFIG.redirectUrl, "_blank", "noopener");
     } else {
@@ -477,5 +470,6 @@
   }
 })();
 </script>
+
 </body>
 </html>
