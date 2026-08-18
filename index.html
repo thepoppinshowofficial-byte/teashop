@@ -1,1 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coupon Flash Banner — The Loaded Tea Shop</title>
 
+<!-- ============================================================
+  HOW TO USE THIS ON YOUR LANDER
+  1. This file is fully self-contained (CSS + HTML + JS in one place).
+  2. Copy everything inside <body>...</body> and paste it right after
+     your <body> tag opens on your landing page.
+  3. Copy everything inside <style>...</style> into your page's CSS
+     (or keep the <style> block as-is, just drop it in <head>).
+  4. Copy the <script>...</script> block right before </body>.
+  5. Edit the CONFIG section at the top of the <script> to set your
+     own coupon code, brand, discount text and — most importantly —
+     your TRACKING / REDIRECT LINK.
+============================================================= -->
+
+<style>
+  :root{
+    --brand-dark:#0b3d2e;
+    --brand-mid:#126b4d;
+    --brand-light:#1fae7c;
+    --accent:#ffce33;
+    --accent-2:#ff5c5c;
+    --text-on-dark:#ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  #ltsFlashBanner{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999999;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-mid) 45%, var(--brand-light) 100%);
+    background-size: 200% 200%;
+    animation: ltsGradientShift 6s ease infinite;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    color: var(--text-on-dark);
+    padding: 10px 14px;
+    transform: translateY(-120%);
+    transition: transform 0.55s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  #ltsFlashBanner.lts-show{
+    transform: translateY(0);
+  }
+
+  @keyframes ltsGradientShift{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  .lts-inner{
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .lts-badge{
+    background: var(--accent-2);
+    color: #fff;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    animation: ltsPulseBadge 1.4s ease-in-out infinite;
+    box-shadow: 0 0 0 rgba(255,92,92,0.6);
+  }
+
+  @keyframes ltsPulseBadge{
+    0%{ transform: scale(1); box-shadow: 0 0 0 0 rgba(255,92,92,0.55); }
+    70%{ transform: scale(1.05); box-shadow: 0 0 0 8px rgba(255,92,92,0); }
+    100%{ transform: scale(1); box-shadow: 0 0 0 0 rgba(255,92,92,0); }
+  }
+
+  .lts-text{
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .lts-brand{
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .lts-code-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px dashed var(--accent);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .lts-code{
+    font-family: "Courier New", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+  }
+
+  .lts-cta{
+    background: var(--accent);
+    color: var(--brand-dark);
+    border: none;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 800;
+    border-radius: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+
+  .lts-cta:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .lts-cta:active{
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+  }
+
+  .lts-cta.lts-copied{
+    background: #2ecc71;
+    color: #fff;
+  }
+
+  .lts-timer-wrap{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background: rgba(0,0,0,0.28);
+    padding: 5px 10px 5px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .lts-timer-label{
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    opacity: 0.9;
+    animation: ltsFlicker 1.8s ease-in-out infinite;
+  }
+
+  @keyframes ltsFlicker{
+    0%, 100%{ opacity: 0.75; }
+    50%{ opacity: 1; }
+  }
+
+  .lts-timer{
+    display:flex;
+    align-items:center;
+    gap: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lts-time-box{
+    background: var(--accent-2);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    min-width: 22px;
+    text-align: center;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
+  }
+
+  .lts-colon{
+    font-weight: 800;
+    animation: ltsBlinkColon 1s steps(1) infinite;
+  }
+
+  @keyframes ltsBlinkColon{
+    50%{ opacity: 0; }
+  }
+
+  .lts-timer-wrap.lts-timer-urgent .lts-time-box{
+    background: #ff1e1e;
+    animation: ltsUrgentShake 0.5s ease-in-out infinite;
+  }
+
+  .lts-timer-wrap.lts-timer-urgent .lts-timer-label{
+    color: var(--accent-2);
+  }
+
+  @keyframes ltsUrgentShake{
+    0%, 100%{ transform: translateX(0); }
+    25%{ transform: translateX(-1px); }
+    75%{ transform: translateX(1px); }
+  }
+
+  .lts-close{
+    position: absolute;
+    right: -4px;
+    top: -6px;
+    background: rgba(0,0,0,0.25);
+    border: none;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* push page content down so the banner doesn't cover it */
+  body.lts-has-banner{
+    margin-top: 0;
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 600px){
+    #ltsFlashBanner{ padding: 8px 10px; }
+    .lts-inner{ gap: 8px; }
+    .lts-text{ font-size: 12.5px; width: 100%; order: 1; }
+    .lts-badge{ order: 0; font-size: 10px; }
+    .lts-code-wrap{ order: 2; padding: 5px 8px; }
+    .lts-code{ font-size: 13px; }
+    .lts-cta{ order: 3; padding: 8px 14px; font-size: 13px; width: 100%; text-align:center; }
+    .lts-timer-wrap{ order: 4; padding: 4px 8px; }
+    .lts-timer-label{ font-size: 10.5px; }
+    .lts-time-box{ font-size: 12.5px; padding: 2px 5px; min-width: 19px; }
+    .lts-close{ top: -8px; right: -6px; }
+  }
+</style>
+</head>
+<body class="lts-has-banner">
+
+<!-- ================= BANNER MARKUP ================= -->
+<div id="ltsFlashBanner" role="region" aria-label="Coupon offer banner">
+  <div class="lts-inner">
+    <button class="lts-close" id="ltsClose" aria-label="Close offer banner">✕</button>
+
+    <span class="lts-badge">⚡ Flash Deal</span>
+
+    <span class="lts-text">
+      <span class="lts-brand">The Loaded Tea Shop</span> — Extra
+      <strong>10% OFF</strong> your order!
+    </span>
+
+    <span class="lts-code-wrap" id="ltsCodeWrap" title="Click to copy">
+      <span class="lts-code" id="ltsCodeText">RAYNA90612</span>
+    </span>
+
+    <span class="lts-timer-wrap" id="ltsTimerWrap">
+      <span class="lts-timer-label">⏰ Ends in</span>
+      <span class="lts-timer">
+        <span class="lts-time-box" id="ltsMin">15</span><span class="lts-colon">:</span><span class="lts-time-box" id="ltsSec">00</span>
+      </span>
+    </span>
+
+    <button class="lts-cta" id="ltsCtaBtn">Copy Code &amp; Shop Now</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= CONFIG — EDIT THESE ================= */
+  var CONFIG = {
+    couponCode: "RAYNA90612",
+    brandName: "The Loaded Tea Shop",
+    discountText: "Extra 10% OFF",
+
+    // ⬇⬇⬇ PASTE YOUR TRACKING / AFFILIATE LINK HERE ⬇⬇⬇
+    redirectUrl: "https://www.theloadedteashop.com/RAYNA90612",
+
+    // How long (ms) to show "Copied!" before redirecting
+    redirectDelayMs: 700,
+
+    // Countdown timer (urgency). Set to null to hide the timer.
+    countdownMinutes: 15,
+
+    // Open the client page in a new tab instead of same tab
+    openInNewTab: true
+  };
+  /* ========================================================= */
+
+  var banner    = document.getElementById("ltsFlashBanner");
+  var ctaBtn    = document.getElementById("ltsCtaBtn");
+  var codeWrap  = document.getElementById("ltsCodeWrap");
+  var closeBtn  = document.getElementById("ltsClose");
+  var timerWrap = document.getElementById("ltsTimerWrap");
+  var minEl     = document.getElementById("ltsMin");
+  var secEl     = document.getElementById("ltsSec");
+
+  // Slide the banner in after a short beat
+  window.addEventListener("load", function () {
+    setTimeout(function () { banner.classList.add("lts-show"); }, 300);
+  });
+
+  function copyCode() {
+    var code = CONFIG.couponCode;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy() {
+      var tmp = document.createElement("textarea");
+      tmp.value = code;
+      tmp.style.position = "fixed";
+      tmp.style.opacity = "0";
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(tmp);
+    }
+  }
+
+  function goToClientPage() {
+    if (!CONFIG.redirectUrl || CONFIG.redirectUrl.indexOf("PASTE_YOUR") === 0) {
+      console.warn("Set CONFIG.redirectUrl to your tracking link before going live.");
+      return;
+    }
+    if (CONFIG.openInNewTab) {
+      window.open(CONFIG.redirectUrl, "_blank", "noopener");
+    } else {
+      window.location.href = CONFIG.redirectUrl;
+    }
+  }
+
+  function handleClaim() {
+    copyCode();
+    ctaBtn.textContent = "Copied! Redirecting…";
+    ctaBtn.classList.add("lts-copied");
+    setTimeout(function () {
+      goToClientPage();
+      // reset button text in case new tab was used and banner stays visible
+      setTimeout(function () {
+        ctaBtn.textContent = "Copy Code & Shop Now";
+        ctaBtn.classList.remove("lts-copied");
+      }, 1500);
+    }, CONFIG.redirectDelayMs);
+  }
+
+  ctaBtn.addEventListener("click", handleClaim);
+  codeWrap.addEventListener("click", handleClaim);
+
+  closeBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    banner.classList.remove("lts-show");
+    setTimeout(function () { banner.style.display = "none"; }, 500);
+  });
+
+  // ---------------- Countdown timer (creates curiosity + urgency) ----------------
+  // Under 60 seconds left, the boxes turn red and shake to spike urgency.
+  if (CONFIG.countdownMinutes && minEl && secEl) {
+    var totalSeconds = CONFIG.countdownMinutes * 60;
+
+    function render() {
+      var m = Math.floor(totalSeconds / 60);
+      var s = totalSeconds % 60;
+      minEl.textContent = m < 10 ? "0" + m : m;
+      secEl.textContent = s < 10 ? "0" + s : s;
+      if (timerWrap) {
+        timerWrap.classList.toggle("lts-timer-urgent", totalSeconds <= 60);
+      }
+    }
+    render();
+
+    setInterval(function () {
+      totalSeconds--;
+      if (totalSeconds < 0) {
+        totalSeconds = CONFIG.countdownMinutes * 60; // loop the urgency timer so it never "runs out" and breaks the offer
+      }
+      render();
+    }, 1000);
+  } else if (timerWrap) {
+    timerWrap.style.display = "none";
+  }
+})();
+</script>
+
+<!-- ============ Demo page filler content (remove on your real page) ============ -->
+<div style="max-width:700px;margin:120px auto;padding:0 20px;font-family:sans-serif;color:#333;">
+  <h1>Your Landing Page Content</h1>
+  <p>This is placeholder content so you can preview how the flash banner sits above your page on both desktop and mobile. Delete this block when you paste the banner into your real lander.</p>
+</div>
+
+</body>
+</html>
