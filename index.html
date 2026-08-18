@@ -361,10 +361,7 @@
   }
   ctaBtn.addEventListener("click", handleClaim);
   codeWrap.addEventListener("click", handleClaim);
-  // Click outside the card closes the popup too
-  overlay.addEventListener("click", function (e) {
-    if (e.target === overlay) closeOverlay();
-  });
+
   // ---------------- Countdown timer (creates curiosity + urgency) ----------------
   if (CONFIG.countdownMinutes && minEl && secEl) {
     var totalSeconds = CONFIG.countdownMinutes * 60;
