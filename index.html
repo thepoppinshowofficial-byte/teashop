@@ -47,7 +47,7 @@
     position: relative;
     width: 100%;
     max-width: 460px;
-    background-image: url('/assets/teashop.png'), linear-gradient(160deg, var(--brand-dark) 0%, var(--brand-mid) 55%, var(--brand-light) 130%);
+    background-image: url(assets/teashop.png'), linear-gradient(160deg, var(--brand-dark) 0%, var(--brand-mid) 55%, var(--brand-light) 130%);
     background-size: cover, 200% 200%;
     background-position: center, 0% 50%;
     background-blend-mode: overlay;
@@ -283,9 +283,10 @@
     // Open the client page in a new tab instead of same tab
     openInNewTab: true,
     // Delay (ms) after page load before the popup appears
-    openDelayMs: 800
-    // Note: dontShowAgainThisSession removed — the popup should always
-    // reappear/stay open since the only way through it is the copy button.
+    openDelayMs: 800,
+    // If true, once a visitor closes the popup it won't reopen again
+    // during the same browser tab session (uses sessionStorage).
+    dontShowAgainThisSession: true
   };
   /* ============================================ */
   var overlay   = document.getElementById("ltsOverlay");
@@ -294,15 +295,32 @@
   var timerWrap = document.getElementById("ltsTimerWrap");
   var minEl     = document.getElementById("ltsMin");
   var secEl     = document.getElementById("ltsSec");
-
+  var SESSION_KEY = "lts_coupon_popup_closed";
+  function alreadyClosedThisSession() {
+    try {
+      return CONFIG.dontShowAgainThisSession && sessionStorage.getItem(SESSION_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function markClosed() {
+    try {
+      if (CONFIG.dontShowAgainThisSession) sessionStorage.setItem(SESSION_KEY, "1");
+    } catch (e) {}
+  }
   // Open the popup a moment after page load
   window.addEventListener("load", function () {
+    if (alreadyClosedThisSession()) return;
     setTimeout(function () {
       overlay.classList.add("lts-show");
       document.documentElement.style.overflow = "hidden"; // lock background scroll
     }, CONFIG.openDelayMs);
   });
-
+  function closeOverlay() {
+    overlay.classList.remove("lts-show");
+    document.documentElement.style.overflow = "";
+    markClosed();
+  }
   function copyCode() {
     var code = CONFIG.couponCode;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -343,10 +361,10 @@
   }
   ctaBtn.addEventListener("click", handleClaim);
   codeWrap.addEventListener("click", handleClaim);
-
-  // NOTE: no click-outside-to-close listener anymore — the overlay only
-  // proceeds when the visitor uses the copy/CTA button, per request.
-
+  // Click outside the card closes the popup too
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) closeOverlay();
+  });
   // ---------------- Countdown timer (creates curiosity + urgency) ----------------
   if (CONFIG.countdownMinutes && minEl && secEl) {
     var totalSeconds = CONFIG.countdownMinutes * 60;
@@ -370,3 +388,4 @@
 </script>
 </body>
 </html>
+i want that the banner should not go away even whet the user click anywhere in the screen it remains open and user will have to click on the coy button
