@@ -44,9 +44,9 @@
     width: 100%;
     max-width: 460px;
     background-image: url('/assets/images(1).png');
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-    animation: ltsGradientShift 7s ease infinite;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 22px;
     padding: 34px 26px 28px;
     text-align: center;
@@ -59,11 +59,6 @@
   #ltsOverlay.lts-show .lts-card{
     transform: scale(1) translateY(0);
     opacity: 1;
-  }
-  @keyframes ltsGradientShift{
-    0%{background-position: 0% 50%;}
-    50%{background-position: 100% 50%;}
-    100%{background-position: 0% 50%;}
   }
   .lts-badge{
     display:inline-block;
